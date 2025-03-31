@@ -1,5 +1,6 @@
 local function drawGame()
-  player:draw()
+  GameMap:draw()
+  Player:draw()
 end
 
 return drawGame

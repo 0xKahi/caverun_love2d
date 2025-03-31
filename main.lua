@@ -11,5 +11,7 @@ end
 
 function love.draw()
   local drawGame = require('src.draw')
+  Cam:attach()
   drawGame()
+  Cam:detach()
 end

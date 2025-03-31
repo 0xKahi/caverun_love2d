@@ -1,29 +1,29 @@
-player = {}
+Player = {}
 
-player.x = 400
-player.y = 200
-player.speed = 500
+Player.x = 120
+Player.y = 100
+Player.speed = 100
 
-player.spriteSheet = love.graphics.newImage('sprites/crusty-crawler.png')
-player.grid = anim8.newGrid(32, 32, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
+Player.spriteSheet = love.graphics.newImage('sprites/slime.png')
+Player.grid = anim8.newGrid(32, 32, Player.spriteSheet:getWidth(), Player.spriteSheet:getHeight())
 
-player.animations = {
+Player.animations = {
   idle = {
-    right = anim8.newAnimation(player.grid('1-5', 1), 0.2),
-    left = anim8.newAnimation(player.grid('1-5', 1), 0.2):flipH(),
+    right = anim8.newAnimation(Player.grid('1-4', 1), 0.3),
+    left = anim8.newAnimation(Player.grid('1-4', 1), 0.3):flipH(),
   },
   move = {
-    right = anim8.newAnimation(player.grid('1-6', 2), 0.1),
-    left = anim8.newAnimation(player.grid('1-6', 2), 0.1):flipH(),
+    right = anim8.newAnimation(Player.grid('1-13', 2), 0.08),
+    left = anim8.newAnimation(Player.grid('1-13', 2), 0.08):flipH(),
   },
 }
 
-player.state = {
+Player.state = {
   direction = 'right',
 }
-player.anim = player.animations.idle
+Player.anim = Player.animations.idle
 
-function player:setAnimation(isMoving)
+function Player:setAnimation(isMoving)
   if isMoving then
     self.anim = self.animations.move[self.state.direction]
   else
@@ -31,7 +31,7 @@ function player:setAnimation(isMoving)
   end
 end
 
-function player:update(dt)
+function Player:update(dt)
   local isMoving = false
   if love.keyboard.isDown('left') or love.keyboard.isDown('a') then
     self.x = self.x - self.speed * dt
@@ -55,10 +55,14 @@ function player:update(dt)
     isMoving = true
   end
 
+  if love.keyboard.isDown('p') then
+    print(self.x, self.y)
+  end
+
   self:setAnimation(isMoving)
   self.anim:update(dt)
 end
 
-function player:draw()
-  self.anim:draw(self.spriteSheet, self.x, self.y, nil, 2, 2)
+function Player:draw()
+  self.anim:draw(self.spriteSheet, self.x, self.y, nil, nil, nil, 16, 16)
 end

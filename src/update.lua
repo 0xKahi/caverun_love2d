@@ -1,5 +1,6 @@
 local function updateGame(dt)
-  player:update(dt)
+  Player:update(dt)
+  Cam:update(dt)
 end
 
 return updateGame
