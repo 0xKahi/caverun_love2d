@@ -1,7 +1,7 @@
 local scale = 2
 local offset = 0 -- offset so some of the outside map is visible
 
-Cam = hump.camera.new(Player.x, Player.y, scale)
+Cam = hump.camera.new(Player.physics:getX(), Player.physics:getY(), scale)
 
 function Cam:update(dt)
   local w = (love.graphics.getWidth() / scale) - offset
@@ -10,7 +10,7 @@ function Cam:update(dt)
   local mapW = (GameMap.currentMap.width * GameMap.currentMap.tilewidth) - offset
   local mapH = (GameMap.currentMap.height * GameMap.currentMap.tileheight) - offset
 
-  self:lookAt(Player.x, Player.y)
+  self:lookAt(Player.physics:getX(), Player.physics:getY())
 
   -- left border
   if self.x < w / 2 then

@@ -1,7 +1,7 @@
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
-  require('src.startup.startup')
-  startup()
+  local GameLoader = require('src.game-loader')
+  GameLoader:loadGame()
 end
 
 function love.update(dt)

@@ -1,8 +1,26 @@
 Player = {}
 
-Player.x = 120
-Player.y = 100
-Player.speed = 100
+-- Player.vx = 0
+-- Player.vy = 0
+
+Player.speed = 5000
+
+Player.state = {
+  direction = 'right',
+  wasMoving = false,
+}
+
+Player.collider = {
+  width = 22,
+  height = 24,
+  offsetY = -5,
+  offsetX = 1,
+}
+
+---@type wf.Collider
+Player.physics = world:newRectangleCollider(120, 100, Player.collider.width, Player.collider.height)
+-- Player.physics:setCollisionClass('Player')
+Player.physics:setFixedRotation(true)
 
 Player.spriteSheet = love.graphics.newImage('sprites/slime.png')
 Player.grid = anim8.newGrid(32, 32, Player.spriteSheet:getWidth(), Player.spriteSheet:getHeight())
@@ -18,14 +36,16 @@ Player.animations = {
   },
 }
 
-Player.state = {
-  direction = 'right',
-}
 Player.anim = Player.animations.idle
 
 function Player:setAnimation(isMoving)
   if isMoving then
     self.anim = self.animations.move[self.state.direction]
+
+    -- if player was not moving before restart animation
+    if not self.state.wasMoving then
+      self.anim:gotoFrame(1)
+    end
   else
     self.anim = self.animations.idle[self.state.direction]
   end
@@ -33,36 +53,58 @@ end
 
 function Player:update(dt)
   local isMoving = false
+  local velocity = {
+    x = 0,
+    y = 0,
+  }
+
   if love.keyboard.isDown('left') or love.keyboard.isDown('a') then
-    self.x = self.x - self.speed * dt
+    velocity.x = -1 * self.speed * dt
     isMoving = true
     self.state.direction = 'left'
   end
 
   if love.keyboard.isDown('right') or love.keyboard.isDown('d') then
-    self.x = self.x + self.speed * dt
+    velocity.x = self.speed * dt
     isMoving = true
     self.state.direction = 'right'
   end
 
   if love.keyboard.isDown('up') or love.keyboard.isDown('w') then
-    self.y = self.y - self.speed * dt
+    velocity.y = -1 * self.speed * dt
     isMoving = true
   end
 
   if love.keyboard.isDown('down') or love.keyboard.isDown('s') then
-    self.y = self.y + self.speed * dt
+    velocity.y = self.speed * dt
     isMoving = true
   end
 
   if love.keyboard.isDown('p') then
-    print(self.x, self.y)
+    local px, py = self.physics:getPosition()
+    print(px, py)
   end
 
+  self.physics:setLinearVelocity(velocity.x, velocity.y)
+
+  world:update(dt)
+
   self:setAnimation(isMoving)
+  self.state.wasMoving = isMoving
   self.anim:update(dt)
 end
 
 function Player:draw()
-  self.anim:draw(self.spriteSheet, self.x, self.y, nil, nil, nil, 16, 16)
+  local px, py = self.physics:getPosition()
+
+  -- offset player sprite to be in the middle of the collider
+  if self.state.direction == 'left' then
+    px = px - self.collider.offsetX
+  end
+
+  if self.state.direction == 'right' then
+    px = px + self.collider.offsetX
+  end
+
+  self.anim:draw(self.spriteSheet, px, py + self.collider.offsetY, nil, nil, nil, 16, 16)
 end
